@@ -7,7 +7,7 @@ This branch records a local Windows deployment of six upstream projects. Source 
 | Marketing Skills | https://github.com/yxs-2026/marketingskills | Updated to 2.14.0; 53 skills installed |
 | Claude SEO | https://github.com/yxs-2026/claude-seo | Updated to 2.5.0; managed runtime and PDF smoke checks passed |
 | squirrelscan | https://github.com/yxs-2026/squirrelscan | Stable Windows CLI 0.0.147 installed and one-page passive offline audit and live MCP call passed (15 tools); source main may be ahead of the published binary |
-| GEOInflow | https://github.com/yxs-2026/GEOInflow | Source and local startup configuration prepared; production image built and migrations passed; first official demo import is running |
+| GEOInflow | https://github.com/yxs-2026/GEOInflow | Running at http://127.0.0.1:3002; production build, migrations, official synthetic demo import and all five container health checks passed |
 | Elmo | https://github.com/yxs-2026/elmo | Running at http://127.0.0.1:3300; database and HTTP health checks passed; UI-only stub mode |
 | Awesome SEO & GEO Skills | https://github.com/yxs-2026/awesome-seo-geo-skills | Source catalog and finder skill installed |
 
@@ -43,3 +43,9 @@ Docker Desktop 4.97.0, Docker Engine 29.9.2 and WSL 3.0.3 are installed and runn
 Clone container projects with `git -c core.autocrlf=false clone URL` so Linux shell scripts and checksum-verified data retain their original bytes. Both local source trees match their Git commits after restoring LF line endings.
 
 Portable templates are in [windows-local](windows-local/): `elmo.compose.yaml`, `elmo.env.example`, and `geoinflow.env.example`. Replace all credential placeholders with separately generated random values, and keep the resulting `.env` files private. Elmo uses `docker compose --env-file .env -f elmo.compose.yaml up --build -d`. GEOInflow uses its original `docker-compose.liekan.yml` with the private environment file. Both applications bind only to loopback. GEOInflow's official example is synthetic; Elmo's tracking worker remains disabled until real providers are configured.
+
+## Final verification — 2026-10-31
+
+All six local installations are complete. GEOInflow and Elmo return HTTP 200 on their home pages and health endpoints. All seven long-running application/database/cache/worker containers are healthy. Elmo opens its first-account registration page; real AI tracking remains unconfigured in stub mode. GEOInflow has only its official synthetic example, with no production website logs connected.
+
+The six local source commits match the corresponding personal fork default-branch heads. No application source changes were required. The installation contains 108 user skills. squirrelscan CLI auditing and the live MCP `get_rule` call both passed.
