@@ -6,9 +6,9 @@ This branch records a local Windows deployment of six upstream projects. Source 
 | --- | --- | --- |
 | Marketing Skills | https://github.com/yxs-2026/marketingskills | Updated to 2.14.0; 53 skills installed |
 | Claude SEO | https://github.com/yxs-2026/claude-seo | Updated to 2.5.0; managed runtime and PDF smoke checks passed |
-| squirrelscan | https://github.com/yxs-2026/squirrelscan | Stable Windows CLI 0.0.147 installed and one-page passive offline audit passed; source main may be ahead of the published binary |
-| GEOInflow | https://github.com/yxs-2026/GEOInflow | Source and local startup configuration prepared; application startup pending Docker/WSL prerequisites |
-| Elmo | https://github.com/yxs-2026/elmo | Source and local compose configuration prepared; application startup pending Docker/WSL prerequisites |
+| squirrelscan | https://github.com/yxs-2026/squirrelscan | Stable Windows CLI 0.0.147 installed and one-page passive offline audit and live MCP call passed (15 tools); source main may be ahead of the published binary |
+| GEOInflow | https://github.com/yxs-2026/GEOInflow | Source and local startup configuration prepared; production image built and migrations passed; first official demo import is running |
+| Elmo | https://github.com/yxs-2026/elmo | Running at http://127.0.0.1:3300; database and HTTP health checks passed; UI-only stub mode |
 | Awesome SEO & GEO Skills | https://github.com/yxs-2026/awesome-seo-geo-skills | Source catalog and finder skill installed |
 
 ## Source versions
@@ -35,3 +35,11 @@ Windows/Codex path adaptations and local launchers are preserved. A local note c
 
 - https://support.google.com/webmasters/answer/16984139
 - https://developers.google.com/search/docs/fundamentals/ai-optimization-guide
+
+## Windows verification and deployment templates
+
+Docker Desktop 4.97.0, Docker Engine 29.9.2 and WSL 3.0.3 are installed and running. Elmo's health endpoint and initial registration page return HTTP 200. Its source lint check passed on 941 files; an upstream Biome schema-version advisory remains informational.
+
+Clone container projects with `git -c core.autocrlf=false clone URL` so Linux shell scripts and checksum-verified data retain their original bytes. Both local source trees match their Git commits after restoring LF line endings.
+
+Portable templates are in [windows-local](windows-local/): `elmo.compose.yaml`, `elmo.env.example`, and `geoinflow.env.example`. Replace all credential placeholders with separately generated random values, and keep the resulting `.env` files private. Elmo uses `docker compose --env-file .env -f elmo.compose.yaml up --build -d`. GEOInflow uses its original `docker-compose.liekan.yml` with the private environment file. Both applications bind only to loopback. GEOInflow's official example is synthetic; Elmo's tracking worker remains disabled until real providers are configured.
