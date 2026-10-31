@@ -1,0 +1,55 @@
+name: local-elmo
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: elmo
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      POSTGRES_DB: elmo
+    volumes:
+      - elmo-db:/var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U elmo -d elmo"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  db-migrate:
+    build:
+      context: ${ELMO_SOURCE_DIR:?Set ELMO_SOURCE_DIR to the cloned repository}
+      dockerfile: docker/Dockerfile
+      target: migrate
+    env_file: [.env]
+    depends_on:
+      db:
+        condition: service_healthy
+  web:
+    build:
+      context: ${ELMO_SOURCE_DIR:?Set ELMO_SOURCE_DIR to the cloned repository}
+      dockerfile: docker/Dockerfile
+      target: web
+    env_file: [.env]
+    ports: ["127.0.0.1:3300:3000"]
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/api/health/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+    restart: unless-stopped
+  worker:
+    build:
+      context: ${ELMO_SOURCE_DIR:?Set ELMO_SOURCE_DIR to the cloned repository}
+      dockerfile: docker/Dockerfile
+      target: worker
+    env_file: [.env]
+    profiles: [tracking]
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+volumes:
+  elmo-db:
